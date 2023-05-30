@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk.dart';
 
 void main() {
@@ -32,7 +33,8 @@ class _MyAppState extends State<MyApp> {
     // We also handle the message potentially returning null.
     try {
       platformVersion =
-          await _flutterStarPrinterSdkPlugin.getPlatformVersion() ?? 'Unknown platform version';
+          await _flutterStarPrinterSdkPlugin.getPlatformVersion() ??
+              'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -50,12 +52,43 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        useMaterial3: true,
+        elevatedButtonTheme: const ElevatedButtonThemeData(
+          style: ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll(Colors.white)),
+        ),
+      ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('Moto G52 always running $_platformVersion no updates !'),
+              const SizedBox(height: 16.0),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Fluttertoast.showToast(
+                    msg: "Printer Discovery Started!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 16.0,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black,
+                  );
+                  _flutterStarPrinterSdkPlugin.discoverPrinter();
+                },
+                icon: const Icon(Icons.sync),
+                label: const Text('Discover'),
+              ),
+            ],
+          ),
         ),
       ),
     );
