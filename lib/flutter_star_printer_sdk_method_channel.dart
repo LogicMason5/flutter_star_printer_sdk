@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
+import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 
 import 'flutter_star_printer_sdk_platform_interface.dart';
@@ -11,6 +15,22 @@ class MethodChannelFlutterStarPrinterSdk
   @visibleForTesting
   final methodChannel = const MethodChannel(
       'co.uk.ferns.flutter_plugins/flutter_star_printer_sdk');
+
+  final FlutterStarPrinterBroadcastListeners broadcastListeners =
+      FlutterStarPrinterBroadcastListeners();
+
+  MethodChannelFlutterStarPrinterSdk() {
+    methodChannel.setMethodCallHandler((call) async {
+      switch (call.method) {
+        case "onDiscovered":
+          final dev = call.arguments;
+          log(dev.toString(), name: "onDiscovered");
+          break;
+        default:
+          return null;
+      }
+    });
+  }
 
   @override
   Future<String?> getPlatformVersion() async {
@@ -32,9 +52,19 @@ class MethodChannelFlutterStarPrinterSdk
   }
 
   @override
-  Future<FlutterStarPrinter> discoverPrinter() {
-    // TODO: implement discoverPrinter
-    throw UnimplementedError();
+  Future<void> discoverPrinter() async {
+    await methodChannel.invokeMethod<String>('discoverPrinter', {
+      "interfaces": [
+        StarConnectionInterface.bluetooth.name,
+        StarConnectionInterface.lan.name
+      ]
+    });
+    // final printer = FlutterStarPrinter.fromMap(<String, dynamic>{
+    //   'model': 'mCPrint3',
+    //   'identifier': '12345',
+    //   'connection': 'bluetooth'
+    // });
+    // broadcastListeners.whenDiscovered(printer);
   }
 
   @override

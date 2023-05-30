@@ -1,4 +1,3 @@
-import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_star_printer_sdk_method_channel.dart';
@@ -29,7 +28,7 @@ abstract class FlutterStarPrinterSdkPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<FlutterStarPrinter> discoverPrinter() async {
+  Future<void> discoverPrinter() async {
     throw UnimplementedError('discoverPrinter() has not been implemented.');
   }
 

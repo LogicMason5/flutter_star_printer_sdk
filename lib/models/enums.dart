@@ -5,7 +5,7 @@ enum StarConnectionInterface {
   lan;
 
   static StarConnectionInterface fromName(String name) =>
-      StarConnectionInterface.values.where((e) => e.name == name).first;
+      StarConnectionInterface.values.firstWhere((e) => e.name == name);
 }
 
 enum StarPrinterPaper {
@@ -47,5 +47,5 @@ enum StarPrinterModel {
 
   const StarPrinterModel(this.label, this.paper);
   static StarPrinterModel fromName(String name) =>
-      StarPrinterModel.values.where((e) => e.name == name).first;
+      StarPrinterModel.values.firstWhere((e) => e.name == name);
 }

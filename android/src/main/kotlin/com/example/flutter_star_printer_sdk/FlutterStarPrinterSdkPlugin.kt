@@ -1,35 +1,111 @@
 package com.example.flutter_star_printer_sdk
 
+import android.app.Activity
+import android.content.Context
+import android.widget.Toast
 import androidx.annotation.NonNull
-
+import com.example.flutter_star_printer_sdk.Adapter.StarPrinterAdapter
+import com.example.flutter_star_printer_sdk.Permissions.BluetoothPermissionManager
+import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.StarPrinter
+import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
+
 /** FlutterStarPrinterSdkPlugin */
-class FlutterStarPrinterSdkPlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+    /// The MethodChannel that will the communication between Flutter and native Android
+    ///
+    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
+    /// when the Flutter Engine is detached from the Activity
+    private lateinit var channel: MethodChannel
+    private lateinit var context: Context
+    private lateinit var activity: Activity
+    private lateinit var starPrinterAdapter: StarPrinterAdapter
 
-  override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "co.uk.ferns.flutter_plugins/flutter_star_printer_sdk")
-    channel.setMethodCallHandler(this)
-  }
-
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
-      result.notImplemented()
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(
+            flutterPluginBinding.binaryMessenger,
+            "co.uk.ferns.flutter_plugins/flutter_star_printer_sdk"
+        )
+        channel.setMethodCallHandler(this)
+        context = flutterPluginBinding.applicationContext
+        starPrinterAdapter = StarPrinterAdapter(context);
     }
-  }
 
-  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
-  }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        Log.d("DART/NATIVE", "onAttachedToActivity")
+        activity = binding.activity;
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onReattachedToActivityForConfigChanges(p0: ActivityPluginBinding) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDetachedFromActivity() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+        when (call.method) {
+            "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
+            "discoverPrinter" -> {
+                val args: Map<*, *> = call.arguments as Map<*, *>;
+                val interfaces: List<*> = args["interfaces"] as List<*>;
+                // Specify your printer interface types.
+                val interfaceTypes: List<InterfaceType> = (interfaces.map {
+                    when (it as String?) {
+                        "lan" -> InterfaceType.Lan
+                        "bluetooth" -> InterfaceType.Bluetooth
+                        "usb" -> InterfaceType.Usb
+                        else -> InterfaceType.Unknown
+                    }
+                }).toList();
+
+                if (interfaceTypes.contains(InterfaceType.Bluetooth)) {
+                    val bluetoothPermissionManager =
+                        BluetoothPermissionManager(mContext = context, mActivity = activity);
+                    if (!bluetoothPermissionManager.hasPermission()) {
+                        bluetoothPermissionManager.requestPermission();
+                    }
+                }
+
+                Log.d("interfaceTypes", "$interfaceTypes")
+
+                starPrinterAdapter.discoverPrinter(interfaceTypes, { printer ->
+                    if (printer == null) return@discoverPrinter;
+                    Toast.makeText(
+                        context,
+                        "Printer Selected: " + printer.information?.model,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }) {
+                    Toast.makeText(
+                        context,
+                        "Discovery Finished",
+                        Toast.LENGTH_LONG
+                    ).show()
+                };
+
+
+                result.success(null);
+            }
+            else -> result.notImplemented()
+        }
+    }
+
+    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        channel.setMethodCallHandler(null)
+    }
 }

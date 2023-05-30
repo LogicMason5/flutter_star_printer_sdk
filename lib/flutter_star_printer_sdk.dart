@@ -5,10 +5,23 @@
 // platforms in the `pubspec.yaml` at
 // https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
 
-import 'flutter_star_printer_sdk_platform_interface.dart';
+import 'dart:async';
+import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 
+import 'flutter_star_printer_sdk_platform_interface.dart';
+
 class FlutterStarPrinterSdk {
+  final FlutterStarPrinterBroadcastListeners _broadcastListeners =
+      FlutterStarPrinterBroadcastListeners();
+
+  /// This line of code is defining a getter method called `scanResults` that returns a `Stream` of
+  /// `FlutterStarPrinter` objects. The `Stream` is obtained from the `broadcastListeners` object, which
+  /// is an instance of `FlutterStarPrinterBroadcastListeners` class. This getter method is used to
+  /// listen for scan results when discovering printers.
+  Stream<FlutterStarPrinter?> get scanResults =>
+      _broadcastListeners.scanResults;
+
   /// This function returns the platform version of the FlutterStarPrinterSdkPlatform instance as a
   /// Future<String?>.
   ///
@@ -24,8 +37,8 @@ class FlutterStarPrinterSdk {
   /// Returns:
   ///   A `Future` object that will eventually resolve to a `FlutterStarPrinter` object after
   /// discovering a printer using the `FlutterStarPrinterSdkPlatform` instance.
-  Future<FlutterStarPrinter> discoverPrinter() async {
-    return FlutterStarPrinterSdkPlatform.instance.discoverPrinter();
+  Future<void> discoverPrinter() async {
+    FlutterStarPrinterSdkPlatform.instance.discoverPrinter();
   }
 
   /// This function attempts to connect to a printer using the FlutterStarPrinterSdkPlatform and returns
