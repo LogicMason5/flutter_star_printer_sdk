@@ -1,11 +1,15 @@
 package com.example.flutter_star_printer_sdk.Adapter
 
 import android.content.Context
-import android.widget.Toast
+import com.example.flutter_star_printer_sdk.Utils.Utils.Companion.showToast
+import kotlinx.coroutines.SupervisorJob
 import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.*
 import com.starmicronics.stario10.starxpandcommand.printer.*
 import io.flutter.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class StarPrinterAdapter(private val mContext: Context) {
 
@@ -42,6 +46,33 @@ class StarPrinterAdapter(private val mContext: Context) {
             Log.d(LOG_TAG, "Star Error: $e")
         } catch (e: Exception) {
             Log.d(LOG_TAG, "Error: $e")
+        }
+    }
+
+    fun connectPrinter(connectionSettings: StarConnectionSettings) {
+        try {
+            val printer = StarPrinter(connectionSettings, mContext);
+
+            val job = SupervisorJob()
+            val scope = CoroutineScope(Dispatchers.Default + job)
+
+            scope.launch {
+                try {
+                    printer!!.openAsync().await()
+                    showToast(mContext, "Printer Connected !");
+                } catch (e: StarIO10NotFoundException) {
+                    showToast(mContext, "Printer not found!");
+                } catch (e: Exception) {
+                    android.util.Log.e("Printer Error", e.toString());
+                    showToast(mContext, "Unable to print, unknown error!")
+                } finally {
+                    printer!!.closeAsync().await();
+                }
+            }
+
+
+        } catch (e: Exception) {
+
         }
     }
 }

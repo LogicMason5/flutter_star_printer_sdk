@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk.dart';
 
@@ -78,22 +79,35 @@ class _MyAppState extends State<MyApp> {
                         'Moto G52 always running $_platformVersion no updates !',
                       ),
                       const SizedBox(height: 16.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: ListTile(
-                          tileColor: Theme.of(context).primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                      Visibility(
+                        visible: snapshot.data != null,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: ListTile(
+                            tileColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            leading: const Icon(Icons.print),
+                            title: Text(snapshot.data?.model.label ?? ""),
+                            subtitle:
+                                Text(snapshot.data?.connection.name ?? ""),
+                            onTap: () {
+                              if (snapshot.data != null) {
+                                _flutterStarPrinterSdkPlugin.connectPrinter(
+                                  printer: snapshot.data!,
+                                );
+                              }
+                            },
                           ),
-                          leading: const Icon(Icons.print),
-                          title: Text(snapshot.data?.model.label ?? ""),
-                          subtitle: Text(snapshot.data?.connection.name ?? ""),
                         ),
                       ),
                       const SizedBox(height: 16.0),
                       ElevatedButton.icon(
                         onPressed: () =>
-                            _flutterStarPrinterSdkPlugin.discoverPrinter(),
+                            _flutterStarPrinterSdkPlugin.discoverPrinter(
+                          interfaces: [StarConnectionInterface.lan],
+                        ),
                         icon: const Icon(Icons.sync),
                         label: const Text('Discover'),
                       ),

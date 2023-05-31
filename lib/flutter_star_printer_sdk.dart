@@ -7,6 +7,7 @@
 
 import 'dart:async';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
+import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 
 import 'flutter_star_printer_sdk_platform_interface.dart';
@@ -37,8 +38,13 @@ class FlutterStarPrinterSdk {
   /// Returns:
   ///   A `Future` object that will eventually resolve to a `FlutterStarPrinter` object after
   /// discovering a printer using the `FlutterStarPrinterSdkPlatform` instance.
-  Future<void> discoverPrinter() async {
-    FlutterStarPrinterSdkPlatform.instance.discoverPrinter();
+  Future<void> discoverPrinter({
+    required List<StarConnectionInterface> interfaces,
+  }) async {
+    assert(interfaces.isNotEmpty);
+    FlutterStarPrinterSdkPlatform.instance.discoverPrinter(
+      interfaces: interfaces,
+    );
   }
 
   /// This function attempts to connect to a printer using the FlutterStarPrinterSdkPlatform and returns
@@ -46,8 +52,17 @@ class FlutterStarPrinterSdk {
   ///
   /// Returns:
   ///   A `Future<bool>` object is being returned.
-  Future<bool> connectPrinter() async {
-    return FlutterStarPrinterSdkPlatform.instance.connectPrinter();
+  Future<bool> connectPrinter({
+    required FlutterStarPrinter printer,
+  }) async {
+    assert(
+      printer.connection != StarConnectionInterface.unknown &&
+          printer.identifier.isNotEmpty,
+    );
+
+    return FlutterStarPrinterSdkPlatform.instance.connectPrinter(
+      printer: printer,
+    );
   }
 
   /// This function disconnects the printer using the FlutterStarPrinterSdkPlatform instance.

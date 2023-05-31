@@ -1,3 +1,5 @@
+import 'package:flutter_star_printer_sdk/models/enums.dart';
+import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_star_printer_sdk_method_channel.dart';
@@ -28,11 +30,12 @@ abstract class FlutterStarPrinterSdkPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<void> discoverPrinter() async {
+  Future<void> discoverPrinter(
+      {required List<StarConnectionInterface> interfaces}) async {
     throw UnimplementedError('discoverPrinter() has not been implemented.');
   }
 
-  Future<bool> connectPrinter() async {
+  Future<bool> connectPrinter({required FlutterStarPrinter printer}) async {
     throw UnimplementedError('connectPrinter() has not been implemented.');
   }
 

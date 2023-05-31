@@ -35,7 +35,7 @@ class MethodChannelFlutterStarPrinterSdk
           identifier: identifier,
           connection: connection,
         );
-        
+
         broadcastListeners.whenDiscovered(printer);
       }
     });
@@ -49,36 +49,32 @@ class MethodChannelFlutterStarPrinterSdk
   }
 
   @override
-  Future<bool> connectPrinter() {
-    // TODO: implement connectPrinter
-    throw UnimplementedError();
-  }
-
-  @override
   Future<bool> disconnectPrinter() {
     // TODO: implement disconnectPrinter
     throw UnimplementedError();
   }
 
   @override
-  Future<void> discoverPrinter() async {
-    await methodChannel.invokeMethod<String>('discoverPrinter', {
-      "interfaces": [
-        StarConnectionInterface.bluetooth.name,
-        StarConnectionInterface.lan.name
-      ]
-    });
-    // final printer = FlutterStarPrinter.fromMap(<String, dynamic>{
-    //   'model': 'mCPrint3',
-    //   'identifier': '12345',
-    //   'connection': 'bluetooth'
-    // });
-    // broadcastListeners.whenDiscovered(printer);
+  Future<void> discoverPrinter({
+    required List<StarConnectionInterface> interfaces,
+  }) async {
+    await methodChannel.invokeMethod<String>('discoverPrinter',
+        {"interfaces": interfaces.map((x) => x.name).toList()});
   }
 
   @override
   Future<void> printReceipt() {
     // TODO: implement printReceipt
     throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> connectPrinter({required FlutterStarPrinter printer}) async {
+    final isConnected =
+        await methodChannel.invokeMethod<bool>('connectPrinter', {
+      "interfaceType": printer.connection.name,
+      "identifier": printer.identifier,
+    });
+    return isConnected ?? false;
   }
 }

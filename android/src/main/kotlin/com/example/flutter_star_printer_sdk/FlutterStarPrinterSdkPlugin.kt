@@ -7,6 +7,7 @@ import androidx.annotation.NonNull
 import com.example.flutter_star_printer_sdk.Adapter.StarPrinterAdapter
 import com.example.flutter_star_printer_sdk.Permissions.BluetoothPermissionManager
 import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -86,14 +87,19 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     channel.invokeMethod("onDiscovered", printerMap);
                 }) {
                     Toast.makeText(
-                        context,
-                        "Discovery Finished",
-                        Toast.LENGTH_LONG
+                        context, "Discovery Finished", Toast.LENGTH_LONG
                     ).show()
                 };
 
-
                 result.success(null);
+            }
+            "connectPrinter" -> {
+                val args: Map<*, *> = call.arguments as Map<*, *>;
+                val interfaceType = getPrinterInterfaceType(args["interfaceType"] as String)
+                val identifier = args["identifier"] as String
+                val settings = StarConnectionSettings(interfaceType, identifier)
+                starPrinterAdapter.connectPrinter(settings)
+                result.success(true);
             }
             else -> result.notImplemented()
         }
@@ -106,11 +112,18 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         val interfaceType = printer.connectionSettings.interfaceType.name
 
         return mutableMapOf(
-            "model" to model,
-            "identifier" to identifier,
-            "connection" to interfaceType
+            "model" to model, "identifier" to identifier, "connection" to interfaceType
         )
     }
+
+
+    private fun getPrinterInterfaceType(interfaceType: String): InterfaceType =
+        when (interfaceType) {
+            "lan" -> InterfaceType.Lan
+            "bluetooth" -> InterfaceType.Bluetooth
+            "usb" -> InterfaceType.Usb
+            else -> InterfaceType.Unknown
+        }
 
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
