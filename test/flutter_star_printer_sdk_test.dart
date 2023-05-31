@@ -1,6 +1,7 @@
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_method_channel.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_platform_interface.dart';
+import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,7 +33,7 @@ class MockFlutterStarPrinterSdkPlatform
   }
 
   @override
-  Future<bool> connectPrinter({required FlutterStarPrinter printer}) {
+  Future<ConnectionResponse> connectPrinter({required FlutterStarPrinter printer}) {
     // TODO: implement connectPrinter
     throw UnimplementedError();
   }

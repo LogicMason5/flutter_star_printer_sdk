@@ -18,7 +18,8 @@ class StarPrinterAdapter(private val mContext: Context) {
     private var _manager: StarDeviceDiscoveryManager? = null
 
     fun discoverPrinter(
-        interfaceTypes: List<InterfaceType>, onPrinterFound: ((printer: StarPrinter) -> Unit),
+        interfaceTypes: List<InterfaceType>,
+        onPrinterFound: ((printer: StarPrinter) -> Unit),
         onDiscoveryFinished: () -> Unit
     ) {
         try {
@@ -49,30 +50,30 @@ class StarPrinterAdapter(private val mContext: Context) {
         }
     }
 
-    fun connectPrinter(connectionSettings: StarConnectionSettings) {
-        try {
-            val printer = StarPrinter(connectionSettings, mContext);
-
-            val job = SupervisorJob()
-            val scope = CoroutineScope(Dispatchers.Default + job)
-
-            scope.launch {
-                try {
-                    printer!!.openAsync().await()
-                    showToast(mContext, "Printer Connected !");
-                } catch (e: StarIO10NotFoundException) {
-                    showToast(mContext, "Printer not found!");
-                } catch (e: Exception) {
-                    android.util.Log.e("Printer Error", e.toString());
-                    showToast(mContext, "Unable to print, unknown error!")
-                } finally {
-                    printer!!.closeAsync().await();
-                }
-            }
-
-
+    suspend fun connectPrinter(connectionSettings: StarConnectionSettings): Map<String, Any?> {
+        return try {
+            val printer = StarPrinter(connectionSettings, mContext)
+            printer.openAsync().await()
+            mapOf("error" to null, "connected" to true)
+        } catch (e: StarIO10InvalidOperationException) {
+            mapOf("error" to "Printer is already connected or opened", "connected" to false)
+        } catch (e: StarIO10CommunicationException) {
+            mapOf("error" to "Printer communication failed", "connected" to false)
+        } catch (e: StarIO10InUseException) {
+            mapOf("error" to "Printer already in use", "connected" to false)
+        } catch (e: StarIO10NotFoundException) {
+            mapOf("error" to "Printer not found", "connected" to false)
+        } catch (e: StarIO10ArgumentException) {
+            mapOf("error" to "The format of the identifier is invalid.", "connected" to false)
+        } catch (e: StarIO10BadResponseException) {
+            mapOf("error" to "The response from the device is invalid.", "connected" to false)
+        } catch (e: StarIO10IllegalHostDeviceStateException) {
+            mapOf("error" to "The network function of the host device cannot be used.", "connected" to false)
+        } catch (e: StarIO10UnsupportedModelException) {
+            mapOf("error" to "This printer model is not supported.", "connected" to false)
         } catch (e: Exception) {
-
+            mapOf("error" to "Printer connection failed, unknown error", "connected" to false)
         }
     }
+
 }

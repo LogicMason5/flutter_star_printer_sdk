@@ -7,6 +7,7 @@
 
 import 'dart:async';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
+import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 
@@ -52,7 +53,7 @@ class FlutterStarPrinterSdk {
   ///
   /// Returns:
   ///   A `Future<bool>` object is being returned.
-  Future<bool> connectPrinter({
+  Future<ConnectionResponse> connectPrinter({
     required FlutterStarPrinter printer,
   }) async {
     assert(

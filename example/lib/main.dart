@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -50,6 +52,8 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  bool connected = false;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -85,18 +89,27 @@ class _MyAppState extends State<MyApp> {
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: ListTile(
                             tileColor: Theme.of(context).primaryColor,
+                            selectedColor: Theme.of(context).primaryColor,
+                            selectedTileColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
+                            selected: false,
                             leading: const Icon(Icons.print),
                             title: Text(snapshot.data?.model.label ?? ""),
                             subtitle:
                                 Text(snapshot.data?.connection.name ?? ""),
-                            onTap: () {
+                            onTap: () async {
                               if (snapshot.data != null) {
-                                _flutterStarPrinterSdkPlugin.connectPrinter(
+                                final result =
+                                    await _flutterStarPrinterSdkPlugin
+                                        .connectPrinter(
                                   printer: snapshot.data!,
                                 );
+
+                                setState(() {
+                                  connected = result.connected;
+                                });
                               }
                             },
                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
+import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:flutter_star_printer_sdk/utils/utils.dart';
@@ -69,12 +70,23 @@ class MethodChannelFlutterStarPrinterSdk
   }
 
   @override
-  Future<bool> connectPrinter({required FlutterStarPrinter printer}) async {
-    final isConnected =
-        await methodChannel.invokeMethod<bool>('connectPrinter', {
-      "interfaceType": printer.connection.name,
-      "identifier": printer.identifier,
-    });
-    return isConnected ?? false;
+  Future<ConnectionResponse> connectPrinter({
+    required FlutterStarPrinter printer,
+  }) async {
+    try {
+      final result = await methodChannel.invokeMethod<Map<Object?, Object?>>(
+        'connectPrinter',
+        {
+          "interfaceType": printer.connection.name,
+          "identifier": printer.identifier,
+        },
+      );
+      return ConnectionResponse(
+        connected: (result?['connected'] as bool?) ?? false,
+        error: result?['error'] as String?,
+      );
+    } on PlatformException catch (e) {
+      return ConnectionResponse(connected: false, error: e.message);
+    }
   }
 }

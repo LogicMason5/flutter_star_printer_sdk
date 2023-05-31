@@ -1,3 +1,4 @@
+import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -35,7 +36,8 @@ abstract class FlutterStarPrinterSdkPlatform extends PlatformInterface {
     throw UnimplementedError('discoverPrinter() has not been implemented.');
   }
 
-  Future<bool> connectPrinter({required FlutterStarPrinter printer}) async {
+  Future<ConnectionResponse> connectPrinter(
+      {required FlutterStarPrinter printer}) async {
     throw UnimplementedError('connectPrinter() has not been implemented.');
   }
 

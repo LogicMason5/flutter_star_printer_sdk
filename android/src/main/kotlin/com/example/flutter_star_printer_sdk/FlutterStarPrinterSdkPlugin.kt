@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import kotlinx.coroutines.*
 
 
 /** FlutterStarPrinterSdkPlugin */
@@ -94,12 +95,22 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 result.success(null);
             }
             "connectPrinter" -> {
-                val args: Map<*, *> = call.arguments as Map<*, *>;
+                val args = call.arguments as Map<String, Any>
                 val interfaceType = getPrinterInterfaceType(args["interfaceType"] as String)
                 val identifier = args["identifier"] as String
                 val settings = StarConnectionSettings(interfaceType, identifier)
-                starPrinterAdapter.connectPrinter(settings)
-                result.success(true);
+                val response = runBlocking{ starPrinterAdapter.connectPrinter(settings) }
+
+                val error = response["error"] as String?
+                val connected = response["connected"] as Boolean?
+
+                result.apply {
+                    when {
+                        connected == true -> success(response)
+                        connected == null || error != null -> error("Printer Error", error, response)
+                        else -> error("Printer Error", "Unknown error occurred while connecting to the printer", response)
+                    }
+                }
             }
             else -> result.notImplemented()
         }
