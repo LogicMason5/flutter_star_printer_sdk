@@ -64,29 +64,44 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: StreamBuilder<FlutterStarPrinter?>(
-            stream: _flutterStarPrinterSdkPlugin.scanResults,
-            builder: (context, snapshot) {
-              return Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                        'Moto G52 always running $_platformVersion no updates !'),
-                    const SizedBox(height: 16.0),
-                    Text(snapshot.data?.model.name ?? "Unknown"),
-                    const SizedBox(height: 16.0),
-                    ElevatedButton.icon(
-                      onPressed: () => _flutterStarPrinterSdkPlugin.discoverPrinter(),
-                      icon: const Icon(Icons.sync),
-                      label: const Text('Discover'),
-                    ),
-                  ],
-                ),
-              );
-            }),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+          child: StreamBuilder<FlutterStarPrinter?>(
+              stream: _flutterStarPrinterSdkPlugin.scanResults,
+              builder: (context, snapshot) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        'Moto G52 always running $_platformVersion no updates !',
+                      ),
+                      const SizedBox(height: 16.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: ListTile(
+                          tileColor: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          leading: const Icon(Icons.print),
+                          title: Text(snapshot.data?.model.label ?? ""),
+                          subtitle: Text(snapshot.data?.connection.name ?? ""),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      ElevatedButton.icon(
+                        onPressed: () =>
+                            _flutterStarPrinterSdkPlugin.discoverPrinter(),
+                        icon: const Icon(Icons.sync),
+                        label: const Text('Discover'),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+        ),
       ),
     );
   }

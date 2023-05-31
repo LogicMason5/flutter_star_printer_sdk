@@ -40,7 +40,7 @@ abstract class FlutterStarPrinterSdkPlatform extends PlatformInterface {
     throw UnimplementedError('disconnectPrinter() has not been implemented.');
   }
 
-  Future<void> print() async {
+  Future<void> printReceipt() async {
     throw UnimplementedError('print() has not been implemented.');
   }
 }

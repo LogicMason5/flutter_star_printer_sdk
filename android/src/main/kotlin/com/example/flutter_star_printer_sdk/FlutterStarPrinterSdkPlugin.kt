@@ -81,15 +81,9 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     }
                 }
 
-                Log.d("interfaceTypes", "$interfaceTypes")
-
                 starPrinterAdapter.discoverPrinter(interfaceTypes, { printer ->
-                    if (printer == null) return@discoverPrinter;
-                    Toast.makeText(
-                        context,
-                        "Printer Selected: " + printer.information?.model,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    val printerMap = printerToMap(printer);
+                    channel.invokeMethod("onDiscovered", printerMap);
                 }) {
                     Toast.makeText(
                         context,
@@ -104,6 +98,20 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             else -> result.notImplemented()
         }
     }
+
+
+    private fun printerToMap(printer: StarPrinter): MutableMap<String, String> {
+        val model = printer.information?.model?.name ?: "Unknown"
+        val identifier = printer.connectionSettings.identifier
+        val interfaceType = printer.connectionSettings.interfaceType.name
+
+        return mutableMapOf(
+            "model" to model,
+            "identifier" to identifier,
+            "connection" to interfaceType
+        )
+    }
+
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)

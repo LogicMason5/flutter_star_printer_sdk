@@ -32,11 +32,6 @@ class StarPrinterAdapter(private val mContext: Context) {
 
                 override fun onDiscoveryFinished() {
                     Log.d(LOG_TAG, "Discovery Finished.")
-                    Toast.makeText(
-                        mContext,
-                        "Discovery Finished",
-                        Toast.LENGTH_LONG
-                    ).show()
                     onDiscoveryFinished.invoke();
                 }
             }

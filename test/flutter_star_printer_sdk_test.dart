@@ -8,7 +8,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockFlutterStarPrinterSdkPlatform
     with MockPlatformInterfaceMixin
     implements FlutterStarPrinterSdkPlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 
@@ -29,16 +28,17 @@ class MockFlutterStarPrinterSdkPlatform
     // TODO: implement discoverPrinter
     throw UnimplementedError();
   }
-  
+
   @override
-  Future<void> print() {
+  Future<void> printReceipt() {
     // TODO: implement print
     throw UnimplementedError();
   }
 }
 
 void main() {
-  final FlutterStarPrinterSdkPlatform initialPlatform = FlutterStarPrinterSdkPlatform.instance;
+  final FlutterStarPrinterSdkPlatform initialPlatform =
+      FlutterStarPrinterSdkPlatform.instance;
 
   test('$MethodChannelFlutterStarPrinterSdk is the default instance', () {
     expect(initialPlatform, isInstanceOf<MethodChannelFlutterStarPrinterSdk>());
@@ -46,7 +46,8 @@ void main() {
 
   test('getPlatformVersion', () async {
     FlutterStarPrinterSdk flutterStarPrinterSdkPlugin = FlutterStarPrinterSdk();
-    MockFlutterStarPrinterSdkPlatform fakePlatform = MockFlutterStarPrinterSdkPlatform();
+    MockFlutterStarPrinterSdkPlatform fakePlatform =
+        MockFlutterStarPrinterSdkPlatform();
     FlutterStarPrinterSdkPlatform.instance = fakePlatform;
 
     expect(await flutterStarPrinterSdkPlugin.getPlatformVersion(), '42');

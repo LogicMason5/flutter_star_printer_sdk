@@ -63,6 +63,6 @@ class FlutterStarPrinterSdk {
   /// Returns:
   ///   A `Future<void>` object is being returned.
   Future<void> print() async {
-    return FlutterStarPrinterSdkPlatform.instance.print();
+    return FlutterStarPrinterSdkPlatform.instance.printReceipt();
   }
 }
