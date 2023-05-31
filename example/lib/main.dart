@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            selected: false,
+                            selected: connected,
                             leading: const Icon(Icons.print),
                             title: Text(snapshot.data?.model.label ?? ""),
                             subtitle:
