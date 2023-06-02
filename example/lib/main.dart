@@ -1,12 +1,10 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
-import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk.dart';
 
 void main() {
   runApp(const MyApp());
@@ -101,15 +99,9 @@ class _MyAppState extends State<MyApp> {
                                 Text(snapshot.data?.connection.name ?? ""),
                             onTap: () async {
                               if (snapshot.data != null) {
-                                final result =
-                                    await _flutterStarPrinterSdkPlugin
-                                        .connectPrinter(
+                                await _flutterStarPrinterSdkPlugin.printReceipt(
                                   printer: snapshot.data!,
                                 );
-
-                                setState(() {
-                                  connected = result.connected;
-                                });
                               }
                             },
                           ),

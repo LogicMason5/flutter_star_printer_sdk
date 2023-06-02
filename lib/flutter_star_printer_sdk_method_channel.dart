@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
 import 'package:flutter_star_printer_sdk/models/connection_response.dart';
+import 'package:flutter_star_printer_sdk/models/disconnect_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:flutter_star_printer_sdk/utils/utils.dart';
@@ -50,12 +51,6 @@ class MethodChannelFlutterStarPrinterSdk
   }
 
   @override
-  Future<bool> disconnectPrinter() {
-    // TODO: implement disconnectPrinter
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> discoverPrinter({
     required List<StarConnectionInterface> interfaces,
   }) async {
@@ -64,9 +59,16 @@ class MethodChannelFlutterStarPrinterSdk
   }
 
   @override
-  Future<void> printReceipt() {
-    // TODO: implement printReceipt
-    throw UnimplementedError();
+  Future<void> printReceipt({
+    required FlutterStarPrinter printer,
+  }) async {
+    await methodChannel.invokeMethod<bool>(
+      'printDocument',
+      {
+        "interfaceType": printer.connection.name,
+        "identifier": printer.identifier,
+      },
+    );
   }
 
   @override
@@ -88,5 +90,22 @@ class MethodChannelFlutterStarPrinterSdk
     } on PlatformException catch (e) {
       return ConnectionResponse(connected: false, error: e.message);
     }
+  }
+
+  @override
+  Future<DisconnectResponse> disconnectPrinter({
+    required FlutterStarPrinter printer,
+  }) async {
+    final result = await methodChannel.invokeMethod<Map<Object?, Object?>>(
+      'disconnectPrinter',
+      {
+        "interfaceType": printer.connection.name,
+        "identifier": printer.identifier,
+      },
+    );
+    return DisconnectResponse(
+      disconnected: (result?['disconnected'] as bool?) ?? false,
+      error: result?['error'] as String?,
+    );
   }
 }

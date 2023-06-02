@@ -1,13 +1,7 @@
-// You have generated a new plugin project without specifying the `--platforms`
-// flag. A plugin project with no platform support was generated. To add a
-// platform, run `flutter create -t plugin --platforms <platforms> .` under the
-// same directory. You can also find a detailed instruction on how to add
-// platforms in the `pubspec.yaml` at
-// https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
-
 import 'dart:async';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
 import 'package:flutter_star_printer_sdk/models/connection_response.dart';
+import 'package:flutter_star_printer_sdk/models/disconnect_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 
@@ -70,15 +64,20 @@ class FlutterStarPrinterSdk {
   ///
   /// Returns:
   ///   A `Future<bool>` object is being returned.
-  Future<bool> disconnectPrinter() async {
-    return FlutterStarPrinterSdkPlatform.instance.disconnectPrinter();
+  Future<DisconnectResponse> disconnectPrinter({
+    required FlutterStarPrinter printer,
+  }) async {
+    return FlutterStarPrinterSdkPlatform.instance
+        .disconnectPrinter(printer: printer);
   }
 
   /// This function calls the print method of the FlutterStarPrinterSdkPlatform instance.
   ///
   /// Returns:
   ///   A `Future<void>` object is being returned.
-  Future<void> print() async {
-    return FlutterStarPrinterSdkPlatform.instance.printReceipt();
+  Future<void> printReceipt({
+    required FlutterStarPrinter printer,
+  }) async {
+    return FlutterStarPrinterSdkPlatform.instance.printReceipt(printer: printer);
   }
 }

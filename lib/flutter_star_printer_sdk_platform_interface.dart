@@ -1,4 +1,5 @@
 import 'package:flutter_star_printer_sdk/models/connection_response.dart';
+import 'package:flutter_star_printer_sdk/models/disconnect_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -41,11 +42,15 @@ abstract class FlutterStarPrinterSdkPlatform extends PlatformInterface {
     throw UnimplementedError('connectPrinter() has not been implemented.');
   }
 
-  Future<bool> disconnectPrinter() async {
+  Future<DisconnectResponse> disconnectPrinter({
+    required FlutterStarPrinter printer,
+  }) async {
     throw UnimplementedError('disconnectPrinter() has not been implemented.');
   }
 
-  Future<void> printReceipt() async {
+  Future<void> printReceipt({
+    required FlutterStarPrinter printer,
+  }) async {
     throw UnimplementedError('print() has not been implemented.');
   }
 }

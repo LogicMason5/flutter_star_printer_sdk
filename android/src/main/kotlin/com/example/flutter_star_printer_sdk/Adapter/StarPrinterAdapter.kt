@@ -1,21 +1,27 @@
 package com.example.flutter_star_printer_sdk.Adapter
 
 import android.content.Context
-import com.example.flutter_star_printer_sdk.Utils.Utils.Companion.showToast
-import kotlinx.coroutines.SupervisorJob
 import com.starmicronics.stario10.*
-import com.starmicronics.stario10.starxpandcommand.*
-import com.starmicronics.stario10.starxpandcommand.printer.*
+import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
+import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
+import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
+import com.starmicronics.stario10.starxpandcommand.printer.Alignment
+import com.starmicronics.stario10.starxpandcommand.printer.CutType
 import io.flutter.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class StarPrinterAdapter(private val mContext: Context) {
 
     private val LOG_TAG = "Flutter Star SDK"
 
     private var _manager: StarDeviceDiscoveryManager? = null
+
+
+    fun createPrinterInstance(
+        connectionSettings: StarConnectionSettings,
+        context: Context
+    ): StarPrinter = StarPrinter(connectionSettings, context)
 
     fun discoverPrinter(
         interfaceTypes: List<InterfaceType>,
@@ -32,12 +38,12 @@ class StarPrinterAdapter(private val mContext: Context) {
             _manager?.callback = object : StarDeviceDiscoveryManager.Callback {
                 override fun onPrinterFound(printer: StarPrinter) {
                     Log.d(LOG_TAG, "Found printer: ${printer.information?.model?.name}.")
-                    onPrinterFound.invoke(printer);
+                    onPrinterFound.invoke(printer)
                 }
 
                 override fun onDiscoveryFinished() {
                     Log.d(LOG_TAG, "Discovery Finished.")
-                    onDiscoveryFinished.invoke();
+                    onDiscoveryFinished.invoke()
                 }
             }
 
@@ -50,9 +56,8 @@ class StarPrinterAdapter(private val mContext: Context) {
         }
     }
 
-    suspend fun connectPrinter(connectionSettings: StarConnectionSettings): Map<String, Any?> {
+    suspend fun connectPrinter(printer: StarPrinter): Map<String, Any?> {
         return try {
-            val printer = StarPrinter(connectionSettings, mContext)
             printer.openAsync().await()
             mapOf("error" to null, "connected" to true)
         } catch (e: StarIO10InvalidOperationException) {
@@ -68,12 +73,69 @@ class StarPrinterAdapter(private val mContext: Context) {
         } catch (e: StarIO10BadResponseException) {
             mapOf("error" to "The response from the device is invalid.", "connected" to false)
         } catch (e: StarIO10IllegalHostDeviceStateException) {
-            mapOf("error" to "The network function of the host device cannot be used.", "connected" to false)
+            mapOf(
+                "error" to "The network function of the host device cannot be used.",
+                "connected" to false
+            )
         } catch (e: StarIO10UnsupportedModelException) {
             mapOf("error" to "This printer model is not supported.", "connected" to false)
         } catch (e: Exception) {
-            mapOf("error" to "Printer connection failed, unknown error", "connected" to false)
+            mapOf("error" to e.localizedMessage, "connected" to false)
         }
+    }
+
+
+    suspend fun disconnectPrinter(printer: StarPrinter): Map<String, Any?> {
+        return try {
+            printer.closeAsync().await()
+            mapOf("error" to null, "disconnected" to true)
+        } catch (e: Exception) {
+            mapOf("error" to e.localizedMessage, "disconnected" to false)
+        }
+    }
+
+    suspend fun printDocument(printer: StarPrinter) {
+        try {
+            val job = SupervisorJob()
+            val scope = CoroutineScope(Dispatchers.Default + job)
+            scope.launch {
+                try {
+                    connectPrinter(printer)
+                    printer!!.printAsync(getPrinterCommands()).await()
+                } finally {
+                    disconnectPrinter(printer)
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Error: ${e.localizedMessage}")
+        }
+    }
+
+
+    private fun getPrinterCommands(): String {
+        val builder = StarXpandCommandBuilder();
+        return builder.addDocument(
+            DocumentBuilder().addPrinter(
+                PrinterBuilder().add(
+                    PrinterBuilder().styleAlignment(Alignment.Center)
+                        .styleMagnification(MagnificationParameter(3, 3)).actionPrintText(
+                            "Foodpage\n"
+                        )
+                ).add(
+                    PrinterBuilder().styleAlignment(Alignment.Center)
+                        .styleMagnification(MagnificationParameter(2, 2)).actionPrintText(
+                            "Star Printer SDK\n"
+                        )
+                ).add(
+                    PrinterBuilder().styleAlignment(Alignment.Center)
+                        .styleMagnification(MagnificationParameter(1, 1)).actionPrintText(
+                            "From Flutter\n"
+                        )
+                ).actionFeed(30.0).actionCut(CutType.Full)
+            )
+        ).getCommands();
+
     }
 
 }

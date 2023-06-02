@@ -95,11 +95,9 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 result.success(null);
             }
             "connectPrinter" -> {
-                val args = call.arguments as Map<String, Any>
-                val interfaceType = getPrinterInterfaceType(args["interfaceType"] as String)
-                val identifier = args["identifier"] as String
-                val settings = StarConnectionSettings(interfaceType, identifier)
-                val response = runBlocking{ starPrinterAdapter.connectPrinter(settings) }
+                val args = call.arguments as Map<*, *>
+                val printer = printerFromArg(args);
+                val response = runBlocking { starPrinterAdapter.connectPrinter(printer) }
 
                 val error = response["error"] as String?
                 val connected = response["connected"] as Boolean?
@@ -107,13 +105,55 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 result.apply {
                     when {
                         connected == true -> success(response)
-                        connected == null || error != null -> error("Printer Error", error, response)
-                        else -> error("Printer Error", "Unknown error occurred while connecting to the printer", response)
+                        connected == null || error != null -> error(
+                            "Printer Error", error, response
+                        )
+                        else -> error(
+                            "Printer Error",
+                            "Unknown error occurred while connecting to the printer",
+                            response
+                        )
                     }
                 }
             }
+            "disconnectPrinter" -> {
+                val args = call.arguments as Map<*, *>
+                val printer = printerFromArg(args);
+                val response = runBlocking { starPrinterAdapter.disconnectPrinter(printer) }
+
+                val error = response["error"] as String?
+                val disconnected = response["disconnected"] as Boolean?
+
+                result.apply {
+                    when {
+                        disconnected == true -> success(response)
+                        disconnected == null || error != null -> error(
+                            "Printer Error", error, response
+                        )
+                        else -> error(
+                            "Printer Error",
+                            "Unknown error occurred while disconnecting the printer",
+                            response
+                        )
+                    }
+                }
+            }
+            "printDocument" -> {
+                val args = call.arguments as Map<*, *>
+                val printer = printerFromArg(args);
+                runBlocking { starPrinterAdapter.printDocument(printer); }
+                result.success(true);
+            }
             else -> result.notImplemented()
         }
+    }
+
+
+    private fun printerFromArg(args: Map<*, *>): StarPrinter {
+        val interfaceType = getPrinterInterfaceType(args["interfaceType"] as String)
+        val identifier = args["identifier"] as String
+        val settings = StarConnectionSettings(interfaceType, identifier)
+        return starPrinterAdapter.createPrinterInstance(settings, context);
     }
 
 
