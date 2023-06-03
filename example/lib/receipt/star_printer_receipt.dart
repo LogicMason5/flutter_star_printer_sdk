@@ -1,6 +1,4 @@
-import 'package:flutter_star_printer_sdk/models/enums.dart';
-import 'package:flutter_star_printer_sdk/models/flutter_star_receipt_builder.dart';
-import 'package:flutter_star_printer_sdk/models/star_printer_style.dart';
+import 'package:flutter_star_printer_sdk/flutter_star_sdk.dart';
 
 class FlutterStarPrinterReceipt {
   static Future<FlutterStarReceiptBuilder> buildReceipt() async {

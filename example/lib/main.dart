@@ -2,12 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk.dart';
-import 'package:flutter_star_printer_sdk/models/enums.dart';
-import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
-import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
+import 'package:flutter_star_printer_sdk/flutter_star_sdk.dart';
 import 'package:flutter_star_printer_sdk_example/receipt/star_printer_receipt.dart';
-
 void main() {
   runApp(const MyApp());
 }
