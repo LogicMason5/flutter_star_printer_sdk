@@ -49,3 +49,89 @@ enum StarPrinterModel {
   static StarPrinterModel fromName(String name) =>
       StarPrinterModel.values.firstWhere((e) => e.name == name);
 }
+
+enum StarPrinterCutType { full, partial, fullDirect, partialDirect }
+
+enum StarPrinterBarcodeSymbology {
+  upcE,
+  upcA,
+  jan8,
+  ean8,
+  jan13,
+  ean13,
+  code39,
+  itf,
+  code128,
+  code93,
+  nw7
+}
+
+enum StarPrinterBarcodeBarRatioLevel { levelPlus1, level0, levelMinus1 }
+
+enum StarPrinterPdf417Level {
+  ecc0,
+  ecc1,
+  ecc2,
+  ecc3,
+  ecc4,
+  ecc5,
+  ecc6,
+  ecc7,
+  ecc8
+}
+
+enum StarPrinterQRCodeModel { model1, model2 }
+
+enum StarPrinterQRCodeLevel { l, m, q, h }
+
+enum StarPrinterStyleAlignment { left, center, right }
+
+enum StarPrinterStyleFontType { a, b }
+
+enum StarPrinterStyleInternationalCharacter {
+  usa,
+  france,
+  germany,
+  uk,
+  denmark,
+  sweden,
+  italy,
+  spain,
+  japan,
+  norway,
+  denmark2,
+  spain2,
+  latinAmerica,
+  korea,
+  ireland,
+  slovenia,
+  croatia,
+  china,
+  vietnam,
+  arabic,
+  legal
+}
+
+enum StarPrinterStyleCharacterEncodingType {
+  japanese,
+  simplifiedChinese,
+  traditionalChinese,
+  korean,
+  codePage
+}
+
+enum StarPrinterStyleCjkCharacterType {
+  japanese,
+  simplifiedChinese,
+  traditionalChinese,
+  korean
+}
+
+class StarPrinterStyleMagnification {
+  final int width;
+  final int height;
+
+  StarPrinterStyleMagnification({required this.width, required this.height});
+
+  Map toMap() => {'width': width, 'height': height};
+}

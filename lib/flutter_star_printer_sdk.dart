@@ -78,6 +78,8 @@ class FlutterStarPrinterSdk {
   Future<void> printReceipt({
     required FlutterStarPrinter printer,
   }) async {
-    return FlutterStarPrinterSdkPlatform.instance.printReceipt(printer: printer);
+    return FlutterStarPrinterSdkPlatform.instance
+        .printReceipt(printer: printer);
   }
 }
+
