@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk_broadcast_listeners.dart';
 import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/disconnect_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
 
 import 'flutter_star_printer_sdk_platform_interface.dart';
 
@@ -77,9 +79,11 @@ class FlutterStarPrinterSdk {
   ///   A `Future<void>` object is being returned.
   Future<void> printReceipt({
     required FlutterStarPrinter printer,
+    required FlutterStarPrinterDocument document,
   }) async {
-    return FlutterStarPrinterSdkPlatform.instance
-        .printReceipt(printer: printer);
+    return FlutterStarPrinterSdkPlatform.instance.printReceipt(
+      printer: printer,
+      document: document,
+    );
   }
 }
-

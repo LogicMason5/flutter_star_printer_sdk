@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_printer_sdk.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
+import 'package:flutter_star_printer_sdk_example/receipt/star_printer_receipt.dart';
 
 void main() {
   runApp(const MyApp());
@@ -99,8 +101,15 @@ class _MyAppState extends State<MyApp> {
                                 Text(snapshot.data?.connection.name ?? ""),
                             onTap: () async {
                               if (snapshot.data != null) {
+                                final builder = await FlutterStarPrinterReceipt
+                                    .buildReceipt();
+
+                                final document = FlutterStarPrinterDocument()
+                                  ..addPrint(builder);
+
                                 await _flutterStarPrinterSdkPlugin.printReceipt(
                                   printer: snapshot.data!,
+                                  document: document,
                                 );
                               }
                             },

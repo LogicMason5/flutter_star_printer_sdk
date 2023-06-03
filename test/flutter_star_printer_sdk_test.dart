@@ -5,6 +5,7 @@ import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/disconnect_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -23,14 +24,6 @@ class MockFlutterStarPrinterSdkPlatform
   }
 
   @override
-  Future<void> printReceipt({
-    required FlutterStarPrinter printer,
-  }) {
-    // TODO: implement print
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> discoverPrinter(
       {required List<StarConnectionInterface> interfaces}) {
     // TODO: implement discoverPrinter
@@ -41,6 +34,14 @@ class MockFlutterStarPrinterSdkPlatform
   Future<ConnectionResponse> connectPrinter(
       {required FlutterStarPrinter printer}) {
     // TODO: implement connectPrinter
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> printReceipt(
+      {required FlutterStarPrinter printer,
+      required FlutterStarPrinterDocument document}) {
+    // TODO: implement printReceipt
     throw UnimplementedError();
   }
 }

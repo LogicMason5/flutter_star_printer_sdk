@@ -88,6 +88,8 @@ enum StarPrinterStyleAlignment { left, center, right }
 
 enum StarPrinterStyleFontType { a, b }
 
+enum StarPrinterLineStyle {single, double }
+
 enum StarPrinterStyleInternationalCharacter {
   usa,
   france,
@@ -127,11 +129,4 @@ enum StarPrinterStyleCjkCharacterType {
   korean
 }
 
-class StarPrinterStyleMagnification {
-  final int width;
-  final int height;
-
-  StarPrinterStyleMagnification({required this.width, required this.height});
-
-  Map toMap() => {'width': width, 'height': height};
-}
+enum StarPrinterDrawerChannel { no1, no2 }

@@ -2,6 +2,7 @@ import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/disconnect_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_star_printer_sdk_method_channel.dart';
@@ -50,6 +51,7 @@ abstract class FlutterStarPrinterSdkPlatform extends PlatformInterface {
 
   Future<void> printReceipt({
     required FlutterStarPrinter printer,
+    required FlutterStarPrinterDocument document,
   }) async {
     throw UnimplementedError('print() has not been implemented.');
   }

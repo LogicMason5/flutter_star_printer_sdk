@@ -1,12 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
+
 import 'package:flutter_star_printer_sdk/models/enums.dart';
-import 'package:flutter_star_printer_sdk/models/star_printer_receipt.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_style.dart';
 
-class FlutterStarReceiptBuilder extends StarPrinterReceipt {
+class FlutterStarReceiptBuilder extends StarPrinterContent {
   final List<Map> _actions = [];
+  final StarPrinterPaper paper;
 
-  @override
-  String get type => 'print';
+  FlutterStarReceiptBuilder({
+    required this.paper,
+  });
 
   void style({
     StarPrinterStyleAlignment? alignment,
@@ -57,6 +62,19 @@ class FlutterStarReceiptBuilder extends StarPrinterReceipt {
 
   void actionFeedLine(int lines) {
     _actions.add({'action': 'feedLine', 'lines': lines});
+  }
+
+  void actionPrintRuledLine({
+    double width = 72.0,
+    double thickness = 0.1,
+    StarPrinterLineStyle style = StarPrinterLineStyle.single,
+  }) {
+    _actions.add({
+      'action': 'printRuledLine',
+      'width': width,
+      'thickness': thickness,
+      'style': style.name,
+    });
   }
 
   void actionPrintText(String text) {
@@ -117,10 +135,42 @@ class FlutterStarReceiptBuilder extends StarPrinterReceipt {
     _actions.add({'action': 'printImage', 'image': image, 'width': width});
   }
 
+  void actionPrintTextOnLeftAndRight({required List<String> texts}) {
+    assert(
+      texts.length == 2,
+    );
+    _actions.add({
+      'action': 'printLeftAndRight',
+      'texts': texts,
+      'maxPaperSize': 48,
+    });
+  }
+
+  void actionPrintTextOnRow({
+    required List<int> ratios,
+    required List<String> texts,
+  }) {
+    assert(ratios.isNotEmpty && texts.isNotEmpty);
+    final sum = ratios.fold(
+      0,
+      (previousValue, element) => previousValue + element,
+    );
+    assert(sum == 12);
+    _actions.add({
+      'action': 'printRowText',
+      'ratios': ratios,
+      'texts': texts,
+      'maxPaperSize': 48,
+    });
+  }
+
   @override
   Map getData() {
     return {"actions": _actions};
   }
+
+  @override
+  String get type => 'print';
 }
 
 extension MapTrim on Map {

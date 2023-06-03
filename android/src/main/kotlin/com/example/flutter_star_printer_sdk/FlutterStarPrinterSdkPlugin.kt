@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.annotation.NonNull
 import com.example.flutter_star_printer_sdk.Adapter.StarPrinterAdapter
 import com.example.flutter_star_printer_sdk.Permissions.BluetoothPermissionManager
+import com.example.flutter_star_printer_sdk.Utils.StarReceiptBuilder
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -141,7 +142,9 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             "printDocument" -> {
                 val args = call.arguments as Map<*, *>
                 val printer = printerFromArg(args);
-                runBlocking { starPrinterAdapter.printDocument(printer); }
+                val document = args["document"] as Map<*, *>
+                val contents = document["contents"] as Collection<*>
+                starPrinterAdapter.printDocument(printer, StarReceiptBuilder.buildReceipt(contents));
                 result.success(true);
             }
             else -> result.notImplemented()

@@ -5,6 +5,7 @@ import 'package:flutter_star_printer_sdk/models/connection_response.dart';
 import 'package:flutter_star_printer_sdk/models/disconnect_response.dart';
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
 import 'package:flutter_star_printer_sdk/utils/utils.dart';
 
 import 'flutter_star_printer_sdk_platform_interface.dart';
@@ -61,12 +62,14 @@ class MethodChannelFlutterStarPrinterSdk
   @override
   Future<void> printReceipt({
     required FlutterStarPrinter printer,
+    required FlutterStarPrinterDocument document,
   }) async {
     await methodChannel.invokeMethod<bool>(
       'printDocument',
       {
         "interfaceType": printer.connection.name,
         "identifier": printer.identifier,
+        "document": document.toMap(),
       },
     );
   }

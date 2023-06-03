@@ -2,12 +2,7 @@ package com.example.flutter_star_printer_sdk.Adapter
 
 import android.content.Context
 import com.starmicronics.stario10.*
-import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
-import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
-import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
-import com.starmicronics.stario10.starxpandcommand.printer.Alignment
-import com.starmicronics.stario10.starxpandcommand.printer.CutType
 import io.flutter.Log
 import kotlinx.coroutines.*
 
@@ -94,48 +89,24 @@ class StarPrinterAdapter(private val mContext: Context) {
         }
     }
 
-    suspend fun printDocument(printer: StarPrinter) {
+    fun printDocument(printer: StarPrinter, builder: StarXpandCommandBuilder) {
         try {
+            val commands = builder.getCommands();
             val job = SupervisorJob()
             val scope = CoroutineScope(Dispatchers.Default + job)
             scope.launch {
                 try {
-                    connectPrinter(printer)
-                    printer!!.printAsync(getPrinterCommands()).await()
+                    val response = connectPrinter(printer);
+                    Log.i(LOG_TAG, response.toString())
+                    printer!!.printAsync(commands).await()
                 } finally {
-                    disconnectPrinter(printer)
+                    val response = disconnectPrinter(printer);
+                    Log.i(LOG_TAG, response.toString())
                 }
             }
 
         } catch (e: Exception) {
-            Log.e(LOG_TAG, "Error: ${e.localizedMessage}")
+            Log.e(LOG_TAG, "Error: $e")
         }
     }
-
-
-    private fun getPrinterCommands(): String {
-        val builder = StarXpandCommandBuilder();
-        return builder.addDocument(
-            DocumentBuilder().addPrinter(
-                PrinterBuilder().add(
-                    PrinterBuilder().styleAlignment(Alignment.Center)
-                        .styleMagnification(MagnificationParameter(3, 3)).actionPrintText(
-                            "Foodpage\n"
-                        )
-                ).add(
-                    PrinterBuilder().styleAlignment(Alignment.Center)
-                        .styleMagnification(MagnificationParameter(2, 2)).actionPrintText(
-                            "Star Printer SDK\n"
-                        )
-                ).add(
-                    PrinterBuilder().styleAlignment(Alignment.Center)
-                        .styleMagnification(MagnificationParameter(1, 1)).actionPrintText(
-                            "From Flutter\n"
-                        )
-                ).actionFeed(30.0).actionCut(CutType.Full)
-            )
-        ).getCommands();
-
-    }
-
 }

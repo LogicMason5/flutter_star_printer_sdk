@@ -1,18 +1,37 @@
 import 'package:flutter_star_printer_sdk/models/enums.dart';
 import 'package:flutter_star_printer_sdk/models/flutter_star_receipt_builder.dart';
+import 'package:flutter_star_printer_sdk/models/star_printer_style.dart';
 
-class StarPrinterReceipt {
-  static buildStarReceipt() async {
-
-
-
-
-    final builder = FlutterStarReceiptBuilder();
+class FlutterStarPrinterReceipt {
+  static Future<FlutterStarReceiptBuilder> buildReceipt() async {
+    final builder = FlutterStarReceiptBuilder(paper: StarPrinterPaper.mm80);
     builder.style(
       alignment: StarPrinterStyleAlignment.center,
-      magnification: StarPrinterStyleMagnification(height: 3, width: 3),
+      magnification: StarPrinterStyleMagnification(height: 2, width: 2),
+      bold: true,
+      fontType: StarPrinterStyleFontType.a,
     );
-
     builder.actionPrintText("Flutter");
+    builder.style(
+      alignment: StarPrinterStyleAlignment.right,
+      magnification: StarPrinterStyleMagnification(height: 1, width: 1),
+      bold: false,
+    );
+    builder.actionPrintText("Start Printer SDK");
+    builder.style(
+      alignment: StarPrinterStyleAlignment.left,
+    );
+    builder.actionPrintTextOnLeftAndRight(
+      texts: ['NAME', 'SANKARANARAYANAN P'],
+    );
+    builder.actionPrintRuledLine();
+    builder.actionPrintTextOnRow(
+      ratios: <int>[5, 3, 1, 3],
+      texts: <String>["ITEM", "PRICE", "QTY", "TOTAL"],
+    );
+    builder.actionFeed(20.0);
+    builder.actionCut(StarPrinterCutType.full);
+
+    return builder;
   }
 }
