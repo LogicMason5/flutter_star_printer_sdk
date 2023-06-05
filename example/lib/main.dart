@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_star_printer_sdk/flutter_star_sdk.dart';
 import 'package:flutter_star_printer_sdk_example/receipt/star_printer_receipt.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -76,7 +77,7 @@ class _MyAppState extends State<MyApp> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Text(
-                        'Moto G52 always running $_platformVersion no updates !',
+                        'Platform Version: $_platformVersion',
                       ),
                       const SizedBox(height: 16.0),
                       Visibility(
