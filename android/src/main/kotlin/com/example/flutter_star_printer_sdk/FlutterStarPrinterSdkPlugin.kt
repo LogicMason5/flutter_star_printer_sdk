@@ -1,7 +1,11 @@
 package com.example.flutter_star_printer_sdk
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.annotation.NonNull
 import com.example.flutter_star_printer_sdk.Adapter.StarPrinterAdapter
@@ -18,11 +22,14 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.*
 
 
 /** FlutterStarPrinterSdkPlugin */
-class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
+    PluginRegistry.ActivityResultListener,
+    PluginRegistry.RequestPermissionsResultListener {
     /// The MethodChannel that will the communication between Flutter and native Android
     ///
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -31,6 +38,7 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     private lateinit var context: Context
     private lateinit var activity: Activity
     private lateinit var starPrinterAdapter: StarPrinterAdapter
+
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(
@@ -144,7 +152,10 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 val printer = printerFromArg(args);
                 val document = args["document"] as Map<*, *>
                 val contents = document["contents"] as Collection<*>
-                starPrinterAdapter.printDocument(printer, StarReceiptBuilder.buildReceipt(contents));
+                starPrinterAdapter.printDocument(
+                    printer,
+                    StarReceiptBuilder.buildReceipt(contents)
+                );
                 result.success(true);
             }
             else -> result.notImplemented()
@@ -182,5 +193,13 @@ class FlutterStarPrinterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+    }
+
+    override fun onActivityResult(p0: Int, p1: Int, p2: Intent?): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onRequestPermissionsResult(p0: Int, p1: Array<out String>, p2: IntArray): Boolean {
+        TODO("Not yet implemented")
     }
 }
