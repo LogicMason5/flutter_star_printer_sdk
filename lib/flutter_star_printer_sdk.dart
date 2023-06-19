@@ -73,6 +73,7 @@ class FlutterStarPrinterSdk {
         .disconnectPrinter(printer: printer);
   }
 
+  /// This function resets the discovery result for a Flutter Star Printer SDK platform instance.
   void resetDiscoveryResult() =>
       FlutterStarPrinterSdkPlatform.instance.resetDiscoveryResult();
 
