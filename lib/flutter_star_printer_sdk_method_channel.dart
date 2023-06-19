@@ -111,4 +111,7 @@ class MethodChannelFlutterStarPrinterSdk
       error: result?['error'] as String?,
     );
   }
+
+  @override
+  void resetDiscoveryResult() => broadcastListeners.reset();
 }

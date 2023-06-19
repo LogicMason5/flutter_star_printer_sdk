@@ -73,6 +73,9 @@ class FlutterStarPrinterSdk {
         .disconnectPrinter(printer: printer);
   }
 
+  void resetDiscoveryResult() =>
+      FlutterStarPrinterSdkPlatform.instance.resetDiscoveryResult();
+
   /// This function calls the print method of the FlutterStarPrinterSdkPlatform instance.
   ///
   /// Returns:

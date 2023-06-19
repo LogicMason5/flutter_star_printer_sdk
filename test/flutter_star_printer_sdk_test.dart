@@ -44,6 +44,11 @@ class MockFlutterStarPrinterSdkPlatform
     // TODO: implement printReceipt
     throw UnimplementedError();
   }
+
+  @override
+  void resetDiscoveryResult() {
+    // TODO: implement resetDiscoveryResult
+  }
 }
 
 void main() {

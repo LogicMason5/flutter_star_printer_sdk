@@ -49,6 +49,12 @@ abstract class FlutterStarPrinterSdkPlatform extends PlatformInterface {
     throw UnimplementedError('disconnectPrinter() has not been implemented.');
   }
 
+  void resetDiscoveryResult() {
+    throw UnimplementedError(
+      'resetDiscoveryResult() has not been implemented.',
+    );
+  }
+
   Future<void> printReceipt({
     required FlutterStarPrinter printer,
     required FlutterStarPrinterDocument document,
