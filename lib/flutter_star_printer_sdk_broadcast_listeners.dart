@@ -2,41 +2,41 @@ import 'dart:async';
 
 import 'package:flutter_star_printer_sdk/models/flutter_star_printer.dart';
 
-/// This is a singleton class that manages a stream controller for broadcasting discovered
-/// FlutterStarPrinter devices.
+/// Singleton that broadcasts discovered Star printers 🔍
 class FlutterStarPrinterBroadcastListeners {
-  /// Creating a private static final instance of the `FlutterStarPrinterBroadcastListeners` class,
-  /// which can only be accessed within the class. This is a common implementation of the Singleton
-  /// design pattern in Dart. The `factory` constructor then returns this instance, ensuring that only
-  /// one instance of the class is ever created.
+  FlutterStarPrinterBroadcastListeners._internal();
+
+  /// Singleton instance
   static final FlutterStarPrinterBroadcastListeners _instance =
       FlutterStarPrinterBroadcastListeners._internal();
 
   factory FlutterStarPrinterBroadcastListeners() => _instance;
 
-  FlutterStarPrinterBroadcastListeners._internal();
+  final StreamController<FlutterStarPrinter?> _discoverController =
+      StreamController<FlutterStarPrinter?>.broadcast();
 
-  final _discoverController = StreamController<FlutterStarPrinter?>.broadcast();
-  Stream<FlutterStarPrinter?> get scanResults => _discoverController.stream;
+  /// Stream of discovered printers
+  Stream<FlutterStarPrinter?> get scanResults =>
+      _discoverController.stream;
 
-  /// This function adds a FlutterStarPrinter object to a stream controller.
-  ///
-  /// Args:
-  ///   result (FlutterStarPrinter): result is an object of type FlutterStarPrinter that is being passed
-  /// as a parameter to the whenDiscovered function. It is likely that this function is part of a larger
-  /// codebase related to discovering and connecting to a Star Printer using the Flutter framework. The
-  /// purpose of this function seems to be to add
-  void whenDiscovered(FlutterStarPrinter result) {
-    _discoverController.sink.add(result);
+  /// Whether controller is closed
+  bool get _isClosed => _discoverController.isClosed;
+
+  /// Emit discovered printer
+  void whenDiscovered(FlutterStarPrinter printer) {
+    if (_isClosed) return;
+    _discoverController.add(printer);
   }
 
-  /// This function reset the discovery result to null
+  /// Reset discovery result (emit null)
   void reset() {
-    _discoverController.sink.add(null);
+    if (_isClosed) return;
+    _discoverController.add(null);
   }
 
-  /// This function dispose the discovery stream controller
-  void dispose() {
-    _discoverController.close();
+  /// Dispose controller safely
+  Future<void> dispose() async {
+    if (_isClosed) return;
+    await _discoverController.close();
   }
 }
