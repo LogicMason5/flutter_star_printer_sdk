@@ -9,85 +9,111 @@ import 'package:flutter_star_printer_sdk/models/star_printer_document.dart';
 
 import 'flutter_star_printer_sdk_platform_interface.dart';
 
+/// High-level API for Star Printer SDK
+/// Optimized for production use
 class FlutterStarPrinterSdk {
+  FlutterStarPrinterSdk._internal();
+
+  /// Singleton instance
+  static final FlutterStarPrinterSdk _instance =
+      FlutterStarPrinterSdk._internal();
+
+  factory FlutterStarPrinterSdk() => _instance;
+
   final FlutterStarPrinterBroadcastListeners _broadcastListeners =
       FlutterStarPrinterBroadcastListeners();
 
-  /// This line of code is defining a getter method called `scanResults` that returns a `Stream` of
-  /// `FlutterStarPrinter` objects. The `Stream` is obtained from the `broadcastListeners` object, which
-  /// is an instance of `FlutterStarPrinterBroadcastListeners` class. This getter method is used to
-  /// listen for scan results when discovering printers.
+  /// Stream of discovered printers during scanning 🔍
   Stream<FlutterStarPrinter?> get scanResults =>
       _broadcastListeners.scanResults;
 
-  /// This function returns the platform version of the FlutterStarPrinterSdkPlatform instance as a
-  /// Future<String?>.
-  ///
-  /// Returns:
-  ///   A `Future` object that will eventually contain a `String` or `null` value.
-  Future<String?> getPlatformVersion() {
-    return FlutterStarPrinterSdkPlatform.instance.getPlatformVersion();
+  /// Get platform version
+  Future<String?> getPlatformVersion() async {
+    try {
+      return await FlutterStarPrinterSdkPlatform.instance
+          .getPlatformVersion();
+    } catch (e) {
+      throw Exception('Failed to get platform version: $e');
+    }
   }
 
-  /// This function returns a Future object that discovers a printer using the
-  /// FlutterStarPrinterSdkPlatform instance.
-  ///
-  /// Returns:
-  ///   A `Future` object that will eventually resolve to a `FlutterStarPrinter` object after
-  /// discovering a printer using the `FlutterStarPrinterSdkPlatform` instance.
+  /// Discover printers on specified interfaces
   Future<void> discoverPrinter({
     required List<StarConnectionInterface> interfaces,
   }) async {
-    assert(interfaces.isNotEmpty);
-    FlutterStarPrinterSdkPlatform.instance.discoverPrinter(
-      interfaces: interfaces,
+    assert(
+      interfaces.isNotEmpty,
+      'Interfaces list cannot be empty',
     );
+
+    try {
+      await FlutterStarPrinterSdkPlatform.instance.discoverPrinter(
+        interfaces: interfaces,
+      );
+    } catch (e) {
+      throw Exception('Printer discovery failed: $e');
+    }
   }
 
-  /// This function attempts to connect to a printer using the FlutterStarPrinterSdkPlatform and returns
-  /// a boolean indicating whether the connection was successful or not.
-  ///
-  /// Returns:
-  ///   A `Future<bool>` object is being returned.
+  /// Connect to a printer 🔌
   Future<ConnectionResponse> connectPrinter({
     required FlutterStarPrinter printer,
+    Duration timeout = const Duration(seconds: 15),
   }) async {
     assert(
-      printer.connection != StarConnectionInterface.unknown &&
-          printer.identifier.isNotEmpty,
+      printer.connection != StarConnectionInterface.unknown,
+      'Printer connection type cannot be unknown',
+    );
+    assert(
+      printer.identifier.isNotEmpty,
+      'Printer identifier cannot be empty',
     );
 
-    return FlutterStarPrinterSdkPlatform.instance.connectPrinter(
-      printer: printer,
-    );
+    try {
+      return await FlutterStarPrinterSdkPlatform.instance
+          .connectPrinter(printer: printer)
+          .timeout(timeout);
+    } on TimeoutException {
+      throw Exception('Connection timed out');
+    } catch (e) {
+      throw Exception('Failed to connect to printer: $e');
+    }
   }
 
-  /// This function disconnects the printer using the FlutterStarPrinterSdkPlatform instance.
-  ///
-  /// Returns:
-  ///   A `Future<bool>` object is being returned.
+  /// Disconnect printer ❌
   Future<DisconnectResponse> disconnectPrinter({
     required FlutterStarPrinter printer,
   }) async {
-    return FlutterStarPrinterSdkPlatform.instance
-        .disconnectPrinter(printer: printer);
+    try {
+      return await FlutterStarPrinterSdkPlatform.instance
+          .disconnectPrinter(printer: printer);
+    } catch (e) {
+      throw Exception('Failed to disconnect printer: $e');
+    }
   }
 
-  /// This function resets the discovery result for a Flutter Star Printer SDK platform instance.
-  void resetDiscoveryResult() =>
-      FlutterStarPrinterSdkPlatform.instance.resetDiscoveryResult();
+  /// Reset discovery results
+  void resetDiscoveryResult() {
+    FlutterStarPrinterSdkPlatform.instance.resetDiscoveryResult();
+  }
 
-  /// This function calls the print method of the FlutterStarPrinterSdkPlatform instance.
-  ///
-  /// Returns:
-  ///   A `Future<void>` object is being returned.
+  /// Print receipt 🧾
   Future<void> printReceipt({
     required FlutterStarPrinter printer,
     required FlutterStarPrinterDocument document,
+    Duration timeout = const Duration(seconds: 30),
   }) async {
-    return FlutterStarPrinterSdkPlatform.instance.printReceipt(
-      printer: printer,
-      document: document,
-    );
+    try {
+      await FlutterStarPrinterSdkPlatform.instance
+          .printReceipt(
+            printer: printer,
+            document: document,
+          )
+          .timeout(timeout);
+    } on TimeoutException {
+      throw Exception('Printing timed out');
+    } catch (e) {
+      throw Exception('Printing failed: $e');
+    }
   }
 }
